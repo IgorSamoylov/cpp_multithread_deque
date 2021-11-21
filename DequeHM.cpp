@@ -1,5 +1,6 @@
 #include "DequeHM.h"
 
+
 template<class T>
 void DequeHM<T>::push_back(T input) {
 
@@ -7,11 +8,12 @@ void DequeHM<T>::push_back(T input) {
 
 	Node<T>* new_node = new Node<T>(input);
 	deque_size++;
-	if (first_node == nullptr) {
+
+	if (first_node == nullptr && start_mutex.try_lock()) {	
 		first_node = new_node;
 		last_node = new_node;
-		back_mutex.unlock();
-		return;
+		back_mutex.unlock(); start_mutex.unlock();
+		return;	
 	}
 	new_node->prev = last_node;
 	last_node->next = new_node;
@@ -21,16 +23,16 @@ void DequeHM<T>::push_back(T input) {
 }
 
 template<class T>
-void DequeHM<T>::push_forward(T input) {
+void DequeHM<T>::push_front(T input) {
 
 	front_mutex.lock();
 
 	Node<T>* new_node = new Node<T>(input);
 	deque_size++;
-	if (first_node == nullptr) {
+	if (first_node == nullptr && start_mutex.try_lock()) {
 		first_node = new_node;
 		last_node = new_node;
-		front_mutex.unlock();
+		front_mutex.unlock(); start_mutex.unlock();
 		return;
 	}
 	new_node->next = first_node;
@@ -41,13 +43,13 @@ void DequeHM<T>::push_forward(T input) {
 }
 
 template<class T>
-T DequeHM<T>::pop_forward() {
+T& DequeHM<T>::pop_forward() {
 
 	front_mutex.lock();
 
 	T result;
 	if (deque_size > 0) {
-		result = first_node->val;
+		result = std::move(first_node->val);
 		Node<T>* new_first_node = first_node->next;
 		delete(first_node);
 		first_node = new_first_node;
@@ -61,13 +63,14 @@ T DequeHM<T>::pop_forward() {
 }
 
 template<class T>
-T DequeHM<T>::pop_back() {
+T& DequeHM<T>::pop_back() {
 
 	back_mutex.lock();
 
 	T result;
 	if (deque_size > 0) {
-		result = last_node->val;
+		result = std::move(last_node->val);
+		//result = last_node->val;
 		Node<T>* new_last_node = last_node->prev;
 		delete(last_node);
 		last_node = new_last_node;
