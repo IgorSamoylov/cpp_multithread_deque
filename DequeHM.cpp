@@ -1,19 +1,26 @@
 #include "DequeHM.h"
 
+template <class T>
+DequeHM<T>::DequeHM() {}
 
-template<class T>
+
+template <class T>
 void DequeHM<T>::push_back(T input) {
 
 	back_mutex.lock();
-
+	
 	Node<T>* new_node = new Node<T>(input);
 	deque_size++;
 
-	if (first_node == nullptr && start_mutex.try_lock()) {	
-		first_node = new_node;
-		last_node = new_node;
-		back_mutex.unlock(); start_mutex.unlock();
-		return;	
+	if (last_node == nullptr) {
+		if (start_mutex.try_lock()) {
+			first_node = new_node;
+			last_node = new_node;
+			back_mutex.unlock(); start_mutex.unlock();
+			cv.notify_all();
+			return;
+		}
+		else cv.wait(std::unique_lock<std::mutex>(wait_mutex));
 	}
 	new_node->prev = last_node;
 	last_node->next = new_node;
@@ -29,11 +36,15 @@ void DequeHM<T>::push_front(T input) {
 
 	Node<T>* new_node = new Node<T>(input);
 	deque_size++;
-	if (first_node == nullptr && start_mutex.try_lock()) {
-		first_node = new_node;
-		last_node = new_node;
-		front_mutex.unlock(); start_mutex.unlock();
-		return;
+	if (first_node == nullptr) {
+		if (start_mutex.try_lock()) {
+			first_node = new_node;
+			last_node = new_node;
+			front_mutex.unlock(); start_mutex.unlock();
+			cv.notify_all();
+			return;
+		}
+		else cv.wait(std::unique_lock<std::mutex>(wait_mutex));
 	}
 	new_node->next = first_node;
 	first_node->prev = new_node;
@@ -95,8 +106,6 @@ bool DequeHM<T>::is_empty() {
 	return deque_size == 0;
 }
 
-template<class T>
-DequeHM<T>::DequeHM() {}
 
 template<class T>
 DequeHM<T>::~DequeHM() {

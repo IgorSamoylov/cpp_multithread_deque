@@ -29,6 +29,8 @@ public:
 	~DequeHM();
 private:
 	std::mutex start_mutex;
+	std::condition_variable cv;
+	std::mutex wait_mutex;
 	std::mutex front_mutex;
 	std::mutex back_mutex;
 };
