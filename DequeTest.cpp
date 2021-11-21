@@ -42,9 +42,10 @@ int main() {
     
     thread thread1(push_back, std::ref(*dequeHM)); thread1.detach();
     thread thread2(push_front, std::ref(*dequeHM)); thread2.detach();
+    thread thread4(push_front, std::ref(*dequeHM)); thread4.detach();
     this_thread::sleep_for(3000ms);
     thread thread3(pop_back, std::ref(*dequeHM)); thread3.join();
-    //thread thread4(push_front, std::ref(*dequeHM)); thread4.join();
+    
     
     //cout << "Elapsed Time 1 " << elapsed_time1 << endl;
     //cout << "Elapsed Time 2 " << elapsed_time2 << endl;

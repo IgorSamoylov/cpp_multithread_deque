@@ -13,6 +13,7 @@ void DequeHM<T>::push_back(T input) {
 	deque_size++;
 
 	if (last_node == nullptr) {
+		std::unique_lock<std::mutex> lk(wait_mutex);
 		if (start_mutex.try_lock()) {
 			first_node = new_node;
 			last_node = new_node;
@@ -20,7 +21,7 @@ void DequeHM<T>::push_back(T input) {
 			cv.notify_all();
 			return;
 		}
-		else cv.wait(std::unique_lock<std::mutex>(wait_mutex));
+		else cv.wait(lk);
 	}
 	new_node->prev = last_node;
 	last_node->next = new_node;
@@ -37,6 +38,7 @@ void DequeHM<T>::push_front(T input) {
 	Node<T>* new_node = new Node<T>(input);
 	deque_size++;
 	if (first_node == nullptr) {
+		std::unique_lock<std::mutex> lk(wait_mutex);
 		if (start_mutex.try_lock()) {
 			first_node = new_node;
 			last_node = new_node;
@@ -44,7 +46,7 @@ void DequeHM<T>::push_front(T input) {
 			cv.notify_all();
 			return;
 		}
-		else cv.wait(std::unique_lock<std::mutex>(wait_mutex));
+		else cv.wait(lk);
 	}
 	new_node->next = first_node;
 	first_node->prev = new_node;
