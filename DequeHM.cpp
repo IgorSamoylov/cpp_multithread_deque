@@ -61,7 +61,7 @@ T& DequeHM<T>::pop_forward() {
 	front_mutex.lock();
 
 	T result;
-	if (deque_size > 0) {
+	if (first_node != nullptr) {
 		//result = std::move(first_node->val);
 		result = first_node->val;
 		Node<T>* new_first_node = first_node->next;
@@ -82,7 +82,7 @@ T& DequeHM<T>::pop_back() {
 	back_mutex.lock();
 
 	T result;
-	if (deque_size > 0) {
+	if (last_node != nullptr) {
 		//result = std::move(last_node->val);
 		result = last_node->val;
 		Node<T>* new_last_node = last_node->prev;
