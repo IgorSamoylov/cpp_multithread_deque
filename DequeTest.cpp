@@ -17,6 +17,7 @@ int main() {
         //auto start = chrono::system_clock::now();
         for (int i = 0; i < 100; i++) {
             dequeHM.push_back(i);
+            this_thread::sleep_for(2ms);
         }
         //auto end = chrono::system_clock::now();
         //chrono::duration<double> time = end - start;
@@ -26,6 +27,7 @@ int main() {
     auto push_front = [](DequeHM<int>& dequeHM) {
         for (int i = 0; i < 100; i++) {
             dequeHM.push_front(i * 10);
+            this_thread::sleep_for(5ms);
         }
     };
     auto pop_back = [&elapsed_time2](DequeHM<int>& dequeHM) {

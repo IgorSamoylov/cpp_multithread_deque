@@ -13,7 +13,7 @@ public:
 
 template <class T>
 class DequeHM {
-public:
+private:
 	Node<T>* first_node = nullptr;
 	Node<T>* last_node = nullptr;
 	std::atomic_long deque_size = 0;
