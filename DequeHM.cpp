@@ -5,7 +5,7 @@ DequeHM<T>::DequeHM() {}
 
 
 template <class T>
-void DequeHM<T>::push_back(T input) {
+void DequeHM<T>::push_back(const T& input) {
 
 	std::lock_guard<std::mutex> guard(back_mutex);
 	
@@ -32,7 +32,7 @@ void DequeHM<T>::push_back(T input) {
 }
 
 template<class T>
-void DequeHM<T>::push_front(T input) {
+void DequeHM<T>::push_front(const T& input) {
 
 	std::lock_guard<std::mutex> guard(front_mutex);
 
@@ -58,7 +58,7 @@ void DequeHM<T>::push_front(T input) {
 }
 
 template<class T>
-T& DequeHM<T>::pop_forward() {
+T DequeHM<T>::pop_forward() {
 
 	std::lock_guard<std::mutex> guard(front_mutex);
 
@@ -77,14 +77,14 @@ T& DequeHM<T>::pop_forward() {
 }
 
 template<class T>
-T& DequeHM<T>::pop_back() {
+T DequeHM<T>::pop_back() {
 
 	std::lock_guard<std::mutex> guard(back_mutex);
 	
 	T result;
 	if (last_node != nullptr) {
-		result = std::move(last_node->val);
-		//result = last_node->val;
+		//result = std::move(last_node->val);
+		result = last_node->val;
 		Node<T>* new_last_node = last_node->prev;
 		delete(last_node);
 		last_node = new_last_node;
@@ -96,13 +96,13 @@ T& DequeHM<T>::pop_back() {
 }
 
 template<class T>
-long DequeHM<T>::size() {
+std::atomic_long DequeHM<T>::size() {
 
 	return deque_size;
 }
 
 template<class T>
-bool DequeHM<T>::is_empty() {
+std::atomic_bool DequeHM<T>::is_empty() {
 
 	return deque_size == 0;
 }

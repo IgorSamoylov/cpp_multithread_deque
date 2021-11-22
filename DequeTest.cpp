@@ -4,6 +4,9 @@
 #include "DequeHM.cpp"
 #include <thread>
 #include <chrono>
+#include <set>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -30,11 +33,13 @@ int main() {
             this_thread::sleep_for(5ms);
         }
     };
-    auto pop_back = [&elapsed_time2](DequeHM<int>& dequeHM) {
+
+    std::vector<int> result_vector;
+    auto pop_back = [&elapsed_time2, &result_vector](DequeHM<int>& dequeHM) {
         //auto start = chrono::system_clock::now();
         while (!dequeHM.is_empty()) {
-            cout << dequeHM.pop_back() << " ";
-            //dequeHM.pop_back();
+            result_vector.push_back(dequeHM.pop_back());
+
         }
         //auto end = chrono::system_clock::now();
         //chrono::duration<double> time = end - start;
@@ -48,16 +53,11 @@ int main() {
     thread thread5(push_back, std::ref(*dequeHM)); thread5.detach();
     this_thread::sleep_for(3000ms);
     thread thread3(pop_back, std::ref(*dequeHM)); thread3.join();
-    
-    
+    std::for_each(result_vector.begin(), result_vector.end(), [](int n) { std::cout << n << " "; });
+     
     //cout << "Elapsed Time 1 " << elapsed_time1 << endl;
     //cout << "Elapsed Time 2 " << elapsed_time2 << endl;
-    /*cout << "Deque Entry: " << endl;
-    for (Node<int>* node = dequeHM->first_node; node != nullptr; node = node->next) {
-         cout << node->val << " ";
-    }
-    cout << endl;
-    */
+   
     delete(dequeHM);  
 }
 

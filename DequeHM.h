@@ -8,22 +8,21 @@ public:
 	T val;
 	Node<T>* next = nullptr;
 	Node<T>* prev = nullptr;
-	Node(T input) : val(input) {};
+	Node(const T& input) : val(input) {};
 };
 
 template <class T>
 class DequeHM {
-private:
 	Node<T>* first_node = nullptr;
 	Node<T>* last_node = nullptr;
 	std::atomic_long deque_size = 0;
 public:
-	void push_back(T input);
-	void push_front(T input);
-	T& pop_forward();
-	T& pop_back();
-	bool is_empty();
-	long size();
+	void push_back(const T& input);
+	void push_front(const T& input);
+	T pop_forward();
+	T pop_back();
+	std::atomic_bool is_empty();
+	std::atomic_long size();
 	
 	DequeHM();
 	~DequeHM();
